@@ -1,0 +1,51 @@
+#include <stdlib.h>
+#include <stdbool.h>
+
+void backtrack(int* nums, int numsSize, int index, int* current, bool* used, int** result, int* resultIndex) {
+    if (index == numsSize) {
+        result[*resultIndex] = (int*)malloc(numsSize * sizeof(int));
+        for (int i = 0; i < numsSize; i++) {
+            result[*resultIndex][i] = current[i];
+        }
+        (*resultIndex)++;
+        return;
+    }
+    
+    for (int i = 0; i < numsSize; i++) {
+        if (!used[i]) {
+            used[i] = true;
+            current[index] = nums[i];
+            backtrack(nums, numsSize, index + 1, current, used, result, resultIndex);
+            used[i] = false; // 回溯关键步骤
+        }
+    }
+}
+
+int factorial(int n) {
+    int fact = 1;
+    for (int i = 2; i <= n; i++) {
+        fact *= i;
+    }
+    return fact;
+}
+
+int** permute(int* nums, int numsSize, int* returnSize, int** returnColumnSizes) {
+    int total = factorial(numsSize);
+    *returnSize = total;
+    *returnColumnSizes = (int*)malloc(total * sizeof(int));
+    int** result = (int**)malloc(total * sizeof(int*));
+    
+    for (int i = 0; i < total; i++) {
+        (*returnColumnSizes)[i] = numsSize;
+    }
+    
+    int* current = (int*)malloc(numsSize * sizeof(int));
+    bool* used = (bool*)calloc(numsSize, sizeof(bool));
+    int resultIndex = 0;
+    
+    backtrack(nums, numsSize, 0, current, used, result, &resultIndex);
+    
+    free(current);
+    free(used);
+    return result;
+}
